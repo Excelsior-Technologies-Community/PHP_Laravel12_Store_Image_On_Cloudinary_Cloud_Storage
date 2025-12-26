@@ -67,7 +67,7 @@ composer create-project laravel/laravel cloudinary-demo
 
 ---
 
-## STEP 2: FULL .env FILE (COPY–PASTE)
+## STEP 2: .env FILE 
 
 ```env
 
@@ -132,8 +132,8 @@ API Secret
 
 ## Add credentials in .env
 ```
-CLOUDINARY_CLOUD_NAME=your_cloud_name 
-CLOUDINARY_API_KEY=your_api_key 
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 ```
 
