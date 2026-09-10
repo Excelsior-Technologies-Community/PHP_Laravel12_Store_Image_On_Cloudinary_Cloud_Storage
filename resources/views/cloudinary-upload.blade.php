@@ -27,14 +27,15 @@
             font-weight: 700;
         }
 
-        .upload-card {
+        .upload-card,
+        .filter-card,
+        .image-card,
+        .stat-card {
             border: 0;
             border-radius: 15px;
         }
 
         .image-card {
-            border: 0;
-            border-radius: 15px;
             overflow: hidden;
             transition: 0.2s;
         }
@@ -55,10 +56,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        /* =========================
-           Upload Area
-        ========================== */
 
         .upload-row {
             display: flex;
@@ -81,15 +78,28 @@
             white-space: nowrap;
         }
 
-        .file-help-text {
-            display: block;
-            margin-top: 5px;
+        .stat-number {
+            font-size: 25px;
+            font-weight: 700;
         }
 
+        .filter-title {
+            font-weight: 700;
+        }
 
-        /* =========================
-           Responsive
-        ========================== */
+        .selected-card {
+            outline: 3px solid #0d6efd;
+        }
+
+        .select-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .copy-btn {
+            white-space: nowrap;
+        }
 
         @media (max-width: 767.98px) {
 
@@ -116,20 +126,22 @@
 <body>
 
 
-    {{-- =========================
-         Navigation Bar
-    ========================== --}}
+{{-- =========================================================
+     NAVBAR
+========================================================= --}}
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-dark bg-dark mb-4">
 
-        <div class="container">
+    <div class="container">
 
-            <a
-                class="navbar-brand"
-                href="{{ route('cloudinary.index') }}"
-            >
-                ☁️ Cloudinary Manager
-            </a>
+        <a
+            class="navbar-brand"
+            href="{{ route('cloudinary.index') }}"
+        >
+            ☁️ Cloudinary Manager
+        </a>
+
+        <div class="d-flex gap-2">
 
             <a
                 href="{{ route('cloudinary.analytics') }}"
@@ -140,212 +152,621 @@
 
         </div>
 
-    </nav>
+    </div>
+
+</nav>
 
 
-    <div class="container pb-5">
+<div class="container pb-5">
 
 
-        {{-- =========================
-             Success Message
-        ========================== --}}
+{{-- =========================================================
+     SUCCESS MESSAGE
+========================================================= --}}
 
-        @if(session('success'))
+@if(session('success'))
 
-            <div
-                class="alert alert-success alert-dismissible fade show"
-                role="alert"
-            >
+    <div
+        class="alert alert-success alert-dismissible fade show"
+        role="alert"
+    >
 
-                {{ session('success') }}
+        {{ session('success') }}
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                ></button>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+        ></button>
 
-            </div>
+    </div>
 
-        @endif
-
-
-        {{-- =========================
-             Error Message
-        ========================== --}}
-
-        @if(session('error'))
-
-            <div
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-            >
-
-                {{ session('error') }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                ></button>
-
-            </div>
-
-        @endif
+@endif
 
 
-        {{-- =========================
-             Validation Errors
-        ========================== --}}
+{{-- =========================================================
+     ERROR MESSAGE
+========================================================= --}}
 
-        @if($errors->any())
+@if(session('error'))
 
-            <div class="alert alert-danger">
+    <div
+        class="alert alert-danger alert-dismissible fade show"
+        role="alert"
+    >
 
-                <strong>
-                    Please fix the following:
-                </strong>
+        {{ session('error') }}
 
-                <ul class="mb-0 mt-2">
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+        ></button>
 
-                    @foreach($errors->all() as $error)
+    </div>
 
-                        <li>
-                            {{ $error }}
-                        </li>
-
-                    @endforeach
-
-                </ul>
-
-            </div>
-
-        @endif
+@endif
 
 
-        {{-- =========================
-             Upload Section
-        ========================== --}}
+{{-- =========================================================
+     VALIDATION ERRORS
+========================================================= --}}
 
-        <div class="card shadow-sm upload-card mb-4">
+@if($errors->any())
 
-            <div class="card-body p-4">
+    <div class="alert alert-danger">
 
-                <h3 class="mb-1">
-                    Upload Image to Cloudinary
-                </h3>
+        <strong>
+            Please fix the following:
+        </strong>
 
-                <p class="text-muted mb-4">
-                    Images are stored directly in Cloudinary Cloud Storage.
-                </p>
+        <ul class="mb-0 mt-2">
 
+            @foreach($errors->all() as $error)
 
-                <form
-                    method="POST"
-                    action="{{ route('cloudinary.upload') }}"
-                    enctype="multipart/form-data"
-                >
+                <li>
+                    {{ $error }}
+                </li>
 
-                    @csrf
+            @endforeach
 
+        </ul>
 
-                    <div class="upload-row">
+    </div>
 
-
-                        {{-- =========================
-                             File Input
-                        ========================== --}}
-
-                        <div class="upload-input-area">
-
-                            <label
-                                for="image"
-                                class="form-label fw-semibold"
-                            >
-                                Select Image
-                            </label>
-
-                            <input
-                                type="file"
-                                name="image"
-                                id="image"
-                                class="form-control"
-                                accept="image/jpeg,image/png,image/gif,image/webp"
-                                required
-                            >
-
-                            <small class="text-muted file-help-text">
-                                JPG, JPEG, PNG, GIF or WEBP — Maximum 5 MB
-                            </small>
-
-                        </div>
+@endif
 
 
-                        {{-- =========================
-                             Upload Button
-                        ========================== --}}
+{{-- =========================================================
+     STATISTICS
+========================================================= --}}
 
-                        <div class="upload-button-area">
+<div class="row mb-4">
 
-                            <button
-                                type="submit"
-                                class="btn btn-primary upload-btn"
-                            >
-                                ☁️ Upload to Cloudinary
-                            </button>
+    <div class="col-lg-4 col-md-6 mb-3">
 
-                        </div>
+        <div class="card shadow-sm stat-card">
 
+            <div class="card-body">
 
-                    </div>
+                <div class="text-muted">
+                    Total Images
+                </div>
 
-
-                </form>
-
+                <div class="stat-number text-primary">
+                    {{ $totalImages }}
+                </div>
 
             </div>
 
         </div>
 
+    </div>
 
-        {{-- =========================
-             Gallery Header
-        ========================== --}}
+
+    <div class="col-lg-4 col-md-6 mb-3">
+
+        <div class="card shadow-sm stat-card">
+
+            <div class="card-body">
+
+                <div class="text-muted">
+                    Filtered Images
+                </div>
+
+                <div class="stat-number text-success">
+                    {{ $filteredImages }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-4 col-md-12 mb-3">
+
+        <div class="card shadow-sm stat-card">
+
+            <div class="card-body">
+
+                <div class="text-muted">
+                    Total Cloud Storage
+                </div>
+
+                <div class="stat-number text-warning">
+
+                    {{ number_format(($totalStorage ?? 0) / 1024 / 1024, 2) }}
+
+                    MB
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{{-- =========================================================
+     UPLOAD SECTION
+========================================================= --}}
+
+<div class="card shadow-sm upload-card mb-4">
+
+    <div class="card-body p-4">
+
+        <h3 class="mb-1">
+            📤 Upload Image to Cloudinary
+        </h3>
+
+        <p class="text-muted mb-4">
+            Images are stored directly in Cloudinary Cloud Storage.
+        </p>
+
+
+        <form
+            method="POST"
+            action="{{ route('cloudinary.upload') }}"
+            enctype="multipart/form-data"
+        >
+
+            @csrf
+
+            <div class="upload-row">
+
+
+                <div class="upload-input-area">
+
+                    <label
+                        for="image"
+                        class="form-label fw-semibold"
+                    >
+                        Select Image
+                    </label>
+
+                    <input
+                        type="file"
+                        name="image"
+                        id="image"
+                        class="form-control"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        required
+                    >
+
+                    <small class="text-muted">
+                        JPG, JPEG, PNG, GIF or WEBP — Maximum 5 MB
+                    </small>
+
+                </div>
+
+
+                <div class="upload-button-area">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary upload-btn"
+                    >
+                        ☁️ Upload to Cloudinary
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+{{-- =========================================================
+     FILTER SECTION
+========================================================= --}}
+
+<div class="card shadow-sm filter-card mb-4">
+
+    <div class="card-body p-4">
 
         <div class="d-flex justify-content-between align-items-center mb-3">
 
             <div>
 
-                <h3 class="mb-0">
-                    🖼️ Cloudinary Image Gallery
-                </h3>
+                <h4 class="mb-1">
+                    🔎 Image Filters
+                </h4>
 
                 <small class="text-muted">
-                    {{ $images->total() }} image(s) stored
+                    Search, filter and sort your Cloudinary images.
                 </small>
+
+            </div>
+
+            <a
+                href="{{ route('cloudinary.index') }}"
+                class="btn btn-outline-secondary btn-sm"
+            >
+                ✕ Clear Filters
+            </a>
+
+        </div>
+
+
+        <form
+            method="GET"
+            action="{{ route('cloudinary.index') }}"
+        >
+
+            <div class="row g-3">
+
+
+                {{-- Search --}}
+
+                <div class="col-lg-4 col-md-6">
+
+                    <label class="form-label filter-title">
+                        🔎 Search
+                    </label>
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        class="form-control"
+                        placeholder="Filename or Public ID..."
+                    >
+
+                </div>
+
+
+                {{-- Format --}}
+
+                <div class="col-lg-2 col-md-6">
+
+                    <label class="form-label filter-title">
+                        🖼️ Format
+                    </label>
+
+                    <select
+                        name="format"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Formats
+                        </option>
+
+                        @foreach($formats as $format)
+
+                            <option
+                                value="{{ $format }}"
+                                {{ request('format') === $format ? 'selected' : '' }}
+                            >
+                                {{ strtoupper($format) }}
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+                {{-- Date --}}
+
+                <div class="col-lg-2 col-md-6">
+
+                    <label class="form-label filter-title">
+                        📅 Date
+                    </label>
+
+                    <select
+                        name="date_filter"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            All Dates
+                        </option>
+
+                        <option
+                            value="today"
+                            {{ request('date_filter') === 'today' ? 'selected' : '' }}
+                        >
+                            Today
+                        </option>
+
+                        <option
+                            value="week"
+                            {{ request('date_filter') === 'week' ? 'selected' : '' }}
+                        >
+                            This Week
+                        </option>
+
+                        <option
+                            value="month"
+                            {{ request('date_filter') === 'month' ? 'selected' : '' }}
+                        >
+                            This Month
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                {{-- Sorting --}}
+
+                <div class="col-lg-4 col-md-6">
+
+                    <label class="form-label filter-title">
+                        ↕️ Sort By
+                    </label>
+
+                    <select
+                        name="sort"
+                        class="form-select"
+                    >
+
+                        <option
+                            value="newest"
+                            {{ request('sort', 'newest') === 'newest' ? 'selected' : '' }}
+                        >
+                            Newest First
+                        </option>
+
+                        <option
+                            value="oldest"
+                            {{ request('sort') === 'oldest' ? 'selected' : '' }}
+                        >
+                            Oldest First
+                        </option>
+
+                        <option
+                            value="largest"
+                            {{ request('sort') === 'largest' ? 'selected' : '' }}
+                        >
+                            Largest File
+                        </option>
+
+                        <option
+                            value="smallest"
+                            {{ request('sort') === 'smallest' ? 'selected' : '' }}
+                        >
+                            Smallest File
+                        </option>
+
+                        <option
+                            value="name_asc"
+                            {{ request('sort') === 'name_asc' ? 'selected' : '' }}
+                        >
+                            Name A-Z
+                        </option>
+
+                        <option
+                            value="name_desc"
+                            {{ request('sort') === 'name_desc' ? 'selected' : '' }}
+                        >
+                            Name Z-A
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                {{-- Minimum Size --}}
+
+                <div class="col-lg-3 col-md-6">
+
+                    <label class="form-label filter-title">
+                        📦 Minimum Size (KB)
+                    </label>
+
+                    <input
+                        type="number"
+                        name="min_size"
+                        value="{{ request('min_size') }}"
+                        min="0"
+                        step="0.01"
+                        class="form-control"
+                        placeholder="Example: 100"
+                    >
+
+                </div>
+
+
+                {{-- Maximum Size --}}
+
+                <div class="col-lg-3 col-md-6">
+
+                    <label class="form-label filter-title">
+                        📦 Maximum Size (KB)
+                    </label>
+
+                    <input
+                        type="number"
+                        name="max_size"
+                        value="{{ request('max_size') }}"
+                        min="0"
+                        step="0.01"
+                        class="form-control"
+                        placeholder="Example: 5000"
+                    >
+
+                </div>
+
+
+                {{-- Submit --}}
+
+                <div class="col-lg-6 col-md-12 d-flex align-items-end">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+                        🔎 Apply Filters
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+{{-- =========================================================
+     BULK ACTION BAR
+========================================================= --}}
+
+<form
+    method="POST"
+    action="{{ route('cloudinary.bulkDestroy') }}"
+    id="bulkDeleteForm"
+>
+
+    @csrf
+
+    @method('DELETE')
+
+
+    <div
+        class="card shadow-sm mb-4"
+        id="bulkActionBar"
+        style="display:none;"
+    >
+
+        <div class="card-body d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <strong>
+                    <span id="selectedCount">0</span>
+                    image(s) selected
+                </strong>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    onclick="clearSelection()"
+                >
+                    Clear Selection
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirmBulkDelete()"
+                >
+                    🗑️ Delete Selected
+                </button>
 
             </div>
 
         </div>
 
-
-        {{-- =========================
-             Gallery
-        ========================== --}}
-
-        <div class="row">
+    </div>
 
 
-            @forelse($images as $image)
+    {{-- =========================================================
+         GALLERY HEADER
+    ========================================================= --}}
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+
+            <h3 class="mb-0">
+                🖼️ Cloudinary Image Gallery
+            </h3>
+
+            <small class="text-muted">
+
+                Showing
+                <strong>{{ $images->count() }}</strong>
+                of
+                <strong>{{ $images->total() }}</strong>
+                filtered image(s)
+
+            </small>
+
+        </div>
 
 
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div>
+
+            <button
+                type="button"
+                class="btn btn-outline-primary btn-sm"
+                onclick="selectAllVisible()"
+            >
+                ☑️ Select Page
+            </button>
+
+        </div>
+
+    </div>
 
 
-                    <div class="card shadow-sm image-card h-100">
+    {{-- =========================================================
+         GALLERY
+    ========================================================= --}}
+
+    <div class="row">
 
 
-                        {{-- Image --}}
+        @forelse($images as $image)
+
+
+            <div
+                class="col-lg-3 col-md-4 col-sm-6 mb-4"
+            >
+
+
+                <div
+                    class="card shadow-sm image-card h-100"
+                    id="card-{{ $image->id }}"
+                >
+
+
+                    {{-- Image --}}
+
+                    <div class="position-relative">
 
                         <img
                             src="{{ $image->secure_url }}"
@@ -354,107 +775,147 @@
                         >
 
 
-                        <div class="card-body">
+                        {{-- Select Checkbox --}}
 
+                        <div
+                            class="position-absolute top-0 start-0 p-2"
+                        >
 
-                            {{-- File Name --}}
-
-                            <h6
-                                class="file-name"
-                                title="{{ $image->original_name }}"
+                            <input
+                                type="checkbox"
+                                name="images[]"
+                                value="{{ $image->id }}"
+                                class="form-check-input select-checkbox image-checkbox"
+                                onchange="updateSelection()"
+                                title="Select image"
                             >
-                                {{ $image->original_name }}
-                            </h6>
+
+                        </div>
 
 
-                            {{-- Image Information --}}
+                        {{-- Format Badge --}}
 
-                            <div class="small text-muted mb-2">
+                        <span
+                            class="position-absolute top-0 end-0 m-2 badge bg-dark"
+                        >
+                            {{ strtoupper($image->format) }}
+                        </span>
 
-                                <div>
-
-                                    Format:
-
-                                    <strong>
-                                        {{ strtoupper($image->format) }}
-                                    </strong>
-
-                                </div>
+                    </div>
 
 
-                                <div>
-
-                                    Size:
-
-                                    <strong>
-                                        {{ $image->formatted_size }}
-                                    </strong>
-
-                                </div>
+                    <div class="card-body">
 
 
-                                <div>
+                        {{-- File Name --}}
 
-                                    Dimensions:
+                        <h6
+                            class="file-name"
+                            title="{{ $image->original_name }}"
+                        >
+                            {{ $image->original_name }}
+                        </h6>
 
-                                    <strong>
-                                        {{ $image->dimensions }}
-                                    </strong>
 
-                                </div>
+                        {{-- Information --}}
+
+                        <div class="small text-muted mb-3">
+
+                            <div>
+
+                                📦 Size:
+
+                                <strong>
+                                    {{ $image->formatted_size }}
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                📐 Dimensions:
+
+                                <strong>
+                                    {{ $image->dimensions }}
+                                </strong>
 
                             </div>
 
 
-                            {{-- Action Buttons --}}
+                            <div>
 
-                            <div class="d-grid gap-2">
+                                📅 Uploaded:
 
-
-                                {{-- View Details --}}
-
-                                <a
-                                    href="{{ route('cloudinary.show', $image) }}"
-                                    class="btn btn-sm btn-outline-primary"
-                                >
-                                    👁️ View Details
-                                </a>
-
-
-                                {{-- Transform --}}
-
-                                <a
-                                    href="{{ route('cloudinary.transform', [$image, 'thumbnail']) }}"
-                                    class="btn btn-sm btn-outline-success"
-                                >
-                                    ✨ Transform
-                                </a>
-
-
-                                {{-- Delete --}}
-
-                                <form
-                                    method="POST"
-                                    action="{{ route('cloudinary.destroy', $image) }}"
-                                    onsubmit="return confirm('Are you sure you want to permanently delete this image from Cloudinary?');"
-                                >
-
-                                    @csrf
-
-                                    @method('DELETE')
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-sm btn-outline-danger w-100"
-                                    >
-                                        🗑️ Delete
-                                    </button>
-
-                                </form>
-
+                                <strong>
+                                    {{ $image->created_at->format('d M Y') }}
+                                </strong>
 
                             </div>
 
+                        </div>
+
+
+                        {{-- Actions --}}
+
+                        <div class="d-grid gap-2">
+
+
+                            {{-- View Details --}}
+
+                            <a
+                                href="{{ route('cloudinary.show', $image) }}"
+                                class="btn btn-sm btn-outline-primary"
+                            >
+                                👁️ View Details
+                            </a>
+
+
+                            {{-- Transform --}}
+
+                            <a
+                                href="{{ route('cloudinary.transform', [$image, 'thumbnail']) }}"
+                                class="btn btn-sm btn-outline-success"
+                            >
+                                ✨ Transform
+                            </a>
+
+
+                            {{-- Copy URL --}}
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-dark copy-btn"
+                                onclick="copyImageUrl(
+                                    '{{ $image->secure_url }}',
+                                    this
+                                )"
+                            >
+                                📋 Copy URL
+                            </button>
+
+
+                            {{-- Download --}}
+
+                            <a
+                                href="{{ route('cloudinary.download', $image) }}"
+                                class="btn btn-sm btn-outline-info"
+                            >
+                                ⬇️ Download
+                            </a>
+
+
+                            {{-- Delete --}}
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                onclick="deleteSingleImage(
+                                    '{{ route('cloudinary.destroy', $image) }}'
+                                )"
+                            >
+                                🗑️ Delete
+                            </button>
 
                         </div>
 
@@ -465,51 +926,298 @@
                 </div>
 
 
-            @empty
+            </div>
 
 
-                <div class="col-12">
+        @empty
 
-                    <div class="alert alert-info text-center">
 
-                        No images have been uploaded yet.
+            <div class="col-12">
 
-                    </div>
+                <div class="alert alert-info text-center">
+
+                    <h5>
+                        🔍 No images found
+                    </h5>
+
+                    <p class="mb-0">
+                        Try changing your search or filters.
+                    </p>
 
                 </div>
 
-
-            @endforelse
-
-
-        </div>
-
-
-        {{-- =========================
-             Pagination
-        ========================== --}}
-
-        @if($images->hasPages())
-
-            <div class="d-flex justify-content-center mt-3">
-
-                {{ $images->links('pagination::bootstrap-5') }}
-
             </div>
 
-        @endif
+        @endforelse
 
 
     </div>
 
 
-    {{-- =========================
-         Bootstrap JavaScript
-    ========================== --}}
+</form>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    ></script>
+
+{{-- =========================================================
+     PAGINATION
+========================================================= --}}
+
+@if($images->hasPages())
+
+    <div class="d-flex justify-content-center mt-3">
+
+        {{ $images->links('pagination::bootstrap-5') }}
+
+    </div>
+
+@endif
+
+
+{{-- =========================================================
+     JAVASCRIPT
+========================================================= --}}
+
+<script>
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update selected images
+    |--------------------------------------------------------------------------
+    */
+
+    function updateSelection()
+    {
+        const checkboxes =
+            document.querySelectorAll('.image-checkbox');
+
+        let selected = 0;
+
+        checkboxes.forEach(function (checkbox) {
+
+            const card =
+                document.getElementById(
+                    'card-' + checkbox.value
+                );
+
+            if (checkbox.checked) {
+
+                selected++;
+
+                if (card) {
+                    card.classList.add(
+                        'selected-card'
+                    );
+                }
+
+            } else {
+
+                if (card) {
+                    card.classList.remove(
+                        'selected-card'
+                    );
+                }
+            }
+
+        });
+
+
+        document.getElementById(
+            'selectedCount'
+        ).innerText = selected;
+
+
+        document.getElementById(
+            'bulkActionBar'
+        ).style.display =
+            selected > 0 ? 'block' : 'none';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Select all images on current page
+    |--------------------------------------------------------------------------
+    */
+
+    function selectAllVisible()
+    {
+        const checkboxes =
+            document.querySelectorAll('.image-checkbox');
+
+        checkboxes.forEach(function (checkbox) {
+
+            checkbox.checked = true;
+
+        });
+
+        updateSelection();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clear selection
+    |--------------------------------------------------------------------------
+    */
+
+    function clearSelection()
+    {
+        const checkboxes =
+            document.querySelectorAll('.image-checkbox');
+
+        checkboxes.forEach(function (checkbox) {
+
+            checkbox.checked = false;
+
+        });
+
+        updateSelection();
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Confirm bulk deletion
+    |--------------------------------------------------------------------------
+    */
+
+    function confirmBulkDelete()
+    {
+        const selected =
+            document.querySelectorAll(
+                '.image-checkbox:checked'
+            ).length;
+
+        if (selected === 0) {
+
+            alert(
+                'Please select at least one image.'
+            );
+
+            return false;
+        }
+
+        return confirm(
+            'Are you sure you want to permanently delete '
+            + selected
+            + ' selected image(s) from Cloudinary?'
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Copy Cloudinary URL
+    |--------------------------------------------------------------------------
+    */
+
+    function copyImageUrl(url, button)
+    {
+        navigator.clipboard.writeText(url)
+            .then(function () {
+
+                const originalText =
+                    button.innerHTML;
+
+                button.innerHTML =
+                    '✅ URL Copied';
+
+                button.classList.remove(
+                    'btn-outline-dark'
+                );
+
+                button.classList.add(
+                    'btn-success'
+                );
+
+                setTimeout(function () {
+
+                    button.innerHTML =
+                        originalText;
+
+                    button.classList.remove(
+                        'btn-success'
+                    );
+
+                    button.classList.add(
+                        'btn-outline-dark'
+                    );
+
+                }, 1800);
+
+            })
+            .catch(function () {
+
+                alert(
+                    'Unable to copy URL. Please copy it manually.'
+                );
+
+            });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Single delete confirmation
+    |--------------------------------------------------------------------------
+    */
+
+    function deleteSingleImage(action)
+    {
+        if (!confirm(
+            'Are you sure you want to permanently delete this image from Cloudinary?'
+        )) {
+            return;
+        }
+
+
+        const form =
+            document.createElement('form');
+
+        form.method = 'POST';
+
+        form.action = action;
+
+
+        const csrf =
+            document.createElement('input');
+
+        csrf.type = 'hidden';
+
+        csrf.name = '_token';
+
+        csrf.value =
+            '{{ csrf_token() }}';
+
+
+        const method =
+            document.createElement('input');
+
+        method.type = 'hidden';
+
+        method.name = '_method';
+
+        method.value = 'DELETE';
+
+
+        form.appendChild(csrf);
+
+        form.appendChild(method);
+
+        document.body.appendChild(form);
+
+        form.submit();
+    }
+
+</script>
+
+
+{{-- =========================================================
+     BOOTSTRAP JS
+========================================================= --}}
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
 
 
 </body>

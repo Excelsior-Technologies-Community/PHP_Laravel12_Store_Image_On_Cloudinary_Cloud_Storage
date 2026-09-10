@@ -32,7 +32,7 @@ class CloudinaryImage extends Model
      */
     public function getFormattedSizeAttribute(): string
     {
-        $bytes = $this->file_size;
+        $bytes = $this->file_size ?? 0;
 
         if ($bytes === 0) {
             return '0 Bytes';
@@ -45,8 +45,14 @@ class CloudinaryImage extends Model
             'GB',
         ];
 
-        $power = floor(log($bytes, 1024));
-        $power = min($power, count($units) - 1);
+        $power = floor(
+            log($bytes, 1024)
+        );
+
+        $power = min(
+            $power,
+            count($units) - 1
+        );
 
         return number_format(
             $bytes / pow(1024, $power),
@@ -59,10 +65,16 @@ class CloudinaryImage extends Model
      */
     public function getDimensionsAttribute(): string
     {
-        if (!$this->width || !$this->height) {
+        if (
+            !$this->width ||
+            !$this->height
+        ) {
             return 'N/A';
         }
 
-        return $this->width . ' × ' . $this->height . ' px';
+        return $this->width
+            . ' × '
+            . $this->height
+            . ' px';
     }
 }
