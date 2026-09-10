@@ -10,31 +10,89 @@ use App\Http\Controllers\CloudinaryAnalyticsController;
 |--------------------------------------------------------------------------
 */
 
-// Upload page
+/*
+|--------------------------------------------------------------------------
+| Gallery + Search + Filters + Sorting
+|--------------------------------------------------------------------------
+*/
+
 Route::get(
     '/cloudinary-upload',
     [CloudinaryUploadController::class, 'index']
 )->name('cloudinary.index');
 
-// Upload image
+/*
+|--------------------------------------------------------------------------
+| Upload Image
+|--------------------------------------------------------------------------
+*/
+
 Route::post(
     '/cloudinary-upload',
     [CloudinaryUploadController::class, 'upload']
 )->name('cloudinary.upload');
 
-// Image details
+/*
+|--------------------------------------------------------------------------
+| Image Details
+|--------------------------------------------------------------------------
+*/
+
 Route::get(
     '/cloudinary-image/{image}',
     [CloudinaryUploadController::class, 'show']
 )->name('cloudinary.show');
 
-// Delete image
+/*
+|--------------------------------------------------------------------------
+| Delete Single Image
+|--------------------------------------------------------------------------
+*/
+
 Route::delete(
     '/cloudinary-image/{image}',
     [CloudinaryUploadController::class, 'destroy']
 )->name('cloudinary.destroy');
 
-// Cloudinary transformations
+/*
+|--------------------------------------------------------------------------
+| Bulk Delete
+|--------------------------------------------------------------------------
+*/
+
+Route::delete(
+    '/cloudinary-images/bulk-delete',
+    [CloudinaryUploadController::class, 'bulkDestroy']
+)->name('cloudinary.bulkDestroy');
+
+/*
+|--------------------------------------------------------------------------
+| Copy Cloudinary URL
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/cloudinary-image/{image}/copy-url',
+    [CloudinaryUploadController::class, 'copyUrl']
+)->name('cloudinary.copyUrl');
+
+/*
+|--------------------------------------------------------------------------
+| Download Image
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/cloudinary-image/{image}/download',
+    [CloudinaryUploadController::class, 'download']
+)->name('cloudinary.download');
+
+/*
+|--------------------------------------------------------------------------
+| Cloudinary Transformations
+|--------------------------------------------------------------------------
+*/
+
 Route::get(
     '/cloudinary-image/{image}/transform/{transformation}',
     [CloudinaryUploadController::class, 'transform']
