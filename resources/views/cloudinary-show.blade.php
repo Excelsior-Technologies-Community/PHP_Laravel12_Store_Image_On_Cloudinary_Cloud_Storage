@@ -165,6 +165,29 @@ PAGE HEADER
 
 </div>
 
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm"><div class="card-body">
+            <h5>📝 Image title, description, category and tags</h5>
+            <form method="POST" action="{{ route('cloudinary.metadata', $image) }}" class="row g-2">
+                @csrf
+                <div class="col-md-6"><input name="title" value="{{ $image->title }}" class="form-control" placeholder="Title"></div>
+                <div class="col-md-6"><input name="category" value="{{ $image->category }}" class="form-control" placeholder="Folder / category"></div>
+                <div class="col-md-6"><input name="tags" value="{{ implode(', ', $image->tags ?? []) }}" class="form-control" placeholder="Tags"></div>
+                <div class="col-md-6"><textarea name="description" class="form-control" placeholder="Description">{{ $image->description }}</textarea></div>
+                <div class="col-12"><button class="btn btn-primary">Save Information</button></div>
+            </form>
+        </div></div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm"><div class="card-body">
+            <h5>Asset controls</h5>
+            <form method="POST" action="{{ route('cloudinary.favorite', $image) }}" class="mb-3">@csrf<button class="btn btn-warning w-100">{{ $image->is_favorite ? '★ Remove Favorite' : '☆ Add Favorite' }}</button></form>
+            <form method="POST" action="{{ route('cloudinary.rename', $image) }}">@csrf<div class="input-group"><input name="public_id" value="{{ $image->public_id }}" class="form-control" required><button class="btn btn-outline-secondary">Rename</button></div></form>
+        </div></div>
+    </div>
+</div>
+
 <a
     href="{{ route('cloudinary.index') }}"
     class="btn btn-secondary"

@@ -12,28 +12,28 @@ class CloudinaryAnalyticsController extends Controller
      */
     public function index()
     {
-        $totalImages = CloudinaryImage::count();
+        $totalImages = CloudinaryImage::active()->count();
 
-        $totalBytes = CloudinaryImage::sum('file_size');
+        $totalBytes = CloudinaryImage::active()->sum('file_size');
 
-        $todayUploads = CloudinaryImage::whereDate(
+        $todayUploads = CloudinaryImage::active()->whereDate(
             'created_at',
             today()
         )->count();
 
-        $weekUploads = CloudinaryImage::where(
+        $weekUploads = CloudinaryImage::active()->where(
             'created_at',
             '>=',
             now()->startOfWeek()
         )->count();
 
-        $averageSize = CloudinaryImage::avg('file_size');
+        $averageSize = CloudinaryImage::active()->avg('file_size');
 
-        $largestImage = CloudinaryImage::orderByDesc(
+        $largestImage = CloudinaryImage::active()->orderByDesc(
             'file_size'
         )->first();
 
-        $formatStatistics = CloudinaryImage::select(
+        $formatStatistics = CloudinaryImage::active()->select(
                 'format',
                 DB::raw('COUNT(*) as total')
             )
@@ -41,7 +41,7 @@ class CloudinaryAnalyticsController extends Controller
             ->orderByDesc('total')
             ->get();
 
-        $recentImages = CloudinaryImage::latest()
+        $recentImages = CloudinaryImage::active()->latest()
             ->take(10)
             ->get();
 

@@ -11,6 +11,8 @@ class CloudinaryImage extends Model
 
     protected $fillable = [
         'original_name',
+        'title',
+        'description',
         'public_id',
         'secure_url',
         'format',
@@ -19,13 +21,40 @@ class CloudinaryImage extends Model
         'width',
         'height',
         'folder',
+        'category',
+        'tags',
+        'is_favorite',
+        'content_hash',
+        'deleted_at',
+        'upload_status',
+        'retry_count',
+        'failure_message',
     ];
 
     protected $casts = [
         'file_size' => 'integer',
         'width' => 'integer',
         'height' => 'integer',
+        'tags' => 'array',
+        'is_favorite' => 'boolean',
+        'deleted_at' => 'datetime',
+        'retry_count' => 'integer',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->whereNull('deleted_at');
+    }
+
+    public function scopeTrashed($query)
+    {
+        return $query->whereNotNull('deleted_at');
+    }
+
+    public function getDisplayTitleAttribute(): string
+    {
+        return $this->title ?: pathinfo($this->original_name, PATHINFO_FILENAME);
+    }
 
     /**
      * Get human-readable file size.
