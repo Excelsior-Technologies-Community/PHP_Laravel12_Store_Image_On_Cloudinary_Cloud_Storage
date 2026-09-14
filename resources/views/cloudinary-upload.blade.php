@@ -101,6 +101,18 @@
             white-space: nowrap;
         }
 
+        .skeleton {
+            background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+            background-size: 200% 100%;
+            animation: loading 1.2s infinite;
+        }
+
+        @keyframes loading { to { background-position: -200% 0; } }
+
+        body.dark-mode { background: #151922; color: #e9ecef; }
+        body.dark-mode .card, body.dark-mode .form-control, body.dark-mode .form-select { background: #202633; color: #e9ecef; border-color: #394354; }
+        body.dark-mode .text-muted { color: #aeb8c7 !important; }
+
         @media (max-width: 767.98px) {
 
             .upload-row {
@@ -149,6 +161,9 @@
             >
                 📊 Analytics
             </a>
+
+            <a href="{{ route('cloudinary.recycleBin') }}" class="btn btn-outline-light">♻️ Recycle Bin ({{ $trashedCount }})</a>
+            <button type="button" class="btn btn-outline-light" onclick="toggleDarkMode()">🌙</button>
 
         </div>
 
@@ -234,6 +249,18 @@
 
     </div>
 
+@endif
+
+@if($failedUploads->isNotEmpty())
+    <div class="alert alert-warning">
+        <strong>Failed uploads</strong>
+        @foreach($failedUploads as $failed)
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <span>{{ $failed->original_name }} <small>({{ $failed->failure_message }})</small></span>
+                <form method="POST" action="{{ route('cloudinary.retry', $failed->id) }}">@csrf<button class="btn btn-sm btn-warning">Retry</button></form>
+            </div>
+        @endforeach
+    </div>
 @endif
 
 
@@ -362,6 +389,13 @@
                         JPG, JPEG, PNG, GIF or WEBP — Maximum 5 MB
                     </small>
 
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-6"><input type="text" name="title" class="form-control" placeholder="Image title"></div>
+                        <div class="col-md-6"><input type="text" name="category" class="form-control" placeholder="Folder / category"></div>
+                        <div class="col-md-6"><input type="text" name="tags" class="form-control" placeholder="Tags: product, banner"></div>
+                        <div class="col-md-6"><textarea name="description" class="form-control" rows="1" placeholder="Image description"></textarea></div>
+                    </div>
+
                 </div>
 
 
@@ -475,6 +509,24 @@
 
                     </select>
 
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label filter-title">📁 Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>{{ $category }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label filter-title">⭐ Favorites</label>
+                    <select name="favorites" class="form-select">
+                        <option value="">All Images</option>
+                        <option value="1" {{ request('favorites') ? 'selected' : '' }}>Favorites Only</option>
+                    </select>
                 </div>
 
 
@@ -696,6 +748,10 @@
                     🗑️ Delete Selected
                 </button>
 
+                <button type="submit" formaction="{{ route('cloudinary.zip') }}" formmethod="POST" class="btn btn-outline-primary btn-sm">
+                    ZIP Export
+                </button>
+
             </div>
 
         </div>
@@ -813,8 +869,11 @@
                             class="file-name"
                             title="{{ $image->original_name }}"
                         >
-                            {{ $image->original_name }}
+                            {{ $image->display_title }}
                         </h6>
+
+                        @if($image->is_favorite)<span class="badge bg-warning text-dark">⭐ Favorite</span>@endif
+                        @if($image->tags)<div class="small text-primary mb-2">#{{ implode(' #', $image->tags) }}</div>@endif
 
 
                         {{-- Information --}}
@@ -1163,18 +1222,9 @@
 
     function deleteSingleImage(action)
     {
-        if (!confirm(
-            'Are you sure you want to permanently delete this image from Cloudinary?'
-        )) {
-            return;
-        }
-
-
-        const form =
-            document.createElement('form');
+        const form = document.createElement('form');
 
         form.method = 'POST';
-
         form.action = action;
 
 
@@ -1200,15 +1250,32 @@
 
 
         form.appendChild(csrf);
-
         form.appendChild(method);
-
         document.body.appendChild(form);
 
-        form.submit();
+        document.getElementById('confirmDeleteButton').onclick = function () {
+            form.submit();
+        };
+        new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
     }
 
+    function toggleDarkMode()
+    {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('cloudinary-dark-mode', document.body.classList.contains('dark-mode') ? '1' : '0');
+    }
+
+    if (localStorage.getItem('cloudinary-dark-mode') === '1') document.body.classList.add('dark-mode');
+
 </script>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Confirm deletion</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">Move this image to the recycle bin?</div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" id="confirmDeleteButton">Move to Recycle Bin</button></div>
+    </div></div>
+</div>
 
 
 {{-- =========================================================

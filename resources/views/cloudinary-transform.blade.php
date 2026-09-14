@@ -102,6 +102,19 @@
 
             <div class="row">
 
+                <div class="col-12 mb-4">
+                    <form method="GET" class="card border p-3 row g-2">
+                        <div class="col-md-2"><label class="form-label">Width</label><input type="number" name="width" min="1" max="4000" class="form-control" placeholder="px"></div>
+                        <div class="col-md-2"><label class="form-label">Height</label><input type="number" name="height" min="1" max="4000" class="form-control" placeholder="px"></div>
+                        <div class="col-md-2"><label class="form-label">Crop</label><select name="crop" class="form-select"><option value="">None</option><option>fill</option><option>fit</option><option>limit</option><option>thumb</option></select></div>
+                        <div class="col-md-2"><label class="form-label">Rotate</label><select name="rotate" class="form-select"><option value="">None</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>
+                        <div class="col-md-2"><label class="form-label">Quality</label><input type="number" name="quality" min="1" max="100" class="form-control" placeholder="1-100"></div>
+                        <div class="col-md-2"><label class="form-label">Format</label><select name="format" class="form-select"><option value="">Auto</option><option>jpg</option><option>png</option><option>webp</option><option>avif</option></select></div>
+                        <div class="col-md-12 d-flex flex-wrap gap-3"><label><input type="checkbox" name="flip_h" value="1"> Flip horizontal</label><label><input type="checkbox" name="flip_v" value="1"> Flip vertical</label><label><input type="checkbox" name="sharpen" value="1"> Sharpen</label><label><input type="checkbox" name="watermark" value="1"> Watermark</label><label><input type="checkbox" name="remove_background" value="1"> Background removal</label><label class="d-flex gap-2 align-items-center">Blur <input type="number" name="blur" min="1" max="2000" class="form-control" style="width:100px"></label></div>
+                        <div class="col-12"><button class="btn btn-primary">Apply Custom Transformation</button></div>
+                    </form>
+                </div>
+
                 {{-- Original --}}
                 <div class="col-md-6 mb-4">
 
@@ -197,6 +210,13 @@
 
                 </div>
 
+            </div>
+
+            <div class="mt-4">
+                <h5>Responsive image URLs</h5>
+                @foreach($responsiveUrls as $width => $responsiveUrl)
+                    <div class="small mb-1"><strong>{{ $width }}px:</strong> <a href="{{ $responsiveUrl }}" target="_blank">{{ $responsiveUrl }}</a></div>
+                @endforeach
             </div>
 
         </div>

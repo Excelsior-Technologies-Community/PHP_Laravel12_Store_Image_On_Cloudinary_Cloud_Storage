@@ -45,6 +45,10 @@
             border-radius: 8px;
         }
 
+        body.dark-mode { background: #151922; color: #e9ecef; }
+        body.dark-mode .card, body.dark-mode .table { background: #202633; color: #e9ecef; }
+        body.dark-mode .text-muted { color: #aeb8c7 !important; }
+
     </style>
 
 </head>
@@ -68,6 +72,8 @@
         >
             🖼️ Gallery
         </a>
+
+        <button type="button" class="btn btn-outline-light" onclick="toggleDarkMode()">🌙</button>
 
     </div>
 
@@ -419,6 +425,15 @@
     </div>
 
 </div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="dashboardToast" class="toast" role="alert"><div class="toast-body">Dashboard loaded</div></div></div>
+
+<script>
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('cloudinary-dark-mode', document.body.classList.contains('dark-mode') ? '1' : '0'); }
+    if (localStorage.getItem('cloudinary-dark-mode') === '1') document.body.classList.add('dark-mode');
+    window.addEventListener('load', function () { if (window.bootstrap) new bootstrap.Toast(document.getElementById('dashboardToast'), { delay: 1600 }).show(); });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

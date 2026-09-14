@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CloudinaryUploadController;
 use App\Http\Controllers\CloudinaryAnalyticsController;
 
+Route::get('/', [CloudinaryAnalyticsController::class, 'index'])
+    ->name('dashboard');
+
 /*
 |--------------------------------------------------------------------------
 | Cloudinary Image Management
@@ -31,6 +34,15 @@ Route::post(
     '/cloudinary-upload',
     [CloudinaryUploadController::class, 'upload']
 )->name('cloudinary.upload');
+
+Route::post('/cloudinary-image/{image}/metadata', [CloudinaryUploadController::class, 'updateMetadata'])
+    ->name('cloudinary.metadata');
+
+Route::post('/cloudinary-image/{image}/favorite', [CloudinaryUploadController::class, 'toggleFavorite'])
+    ->name('cloudinary.favorite');
+
+Route::post('/cloudinary-image/{image}/rename', [CloudinaryUploadController::class, 'rename'])
+    ->name('cloudinary.rename');
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +76,21 @@ Route::delete(
     '/cloudinary-images/bulk-delete',
     [CloudinaryUploadController::class, 'bulkDestroy']
 )->name('cloudinary.bulkDestroy');
+
+Route::post('/cloudinary-images/zip', [CloudinaryUploadController::class, 'zip'])
+    ->name('cloudinary.zip');
+
+Route::get('/cloudinary-recycle-bin', [CloudinaryUploadController::class, 'recycleBin'])
+    ->name('cloudinary.recycleBin');
+
+Route::patch('/cloudinary-image/{image}/restore', [CloudinaryUploadController::class, 'restore'])
+    ->name('cloudinary.restore');
+
+Route::delete('/cloudinary-image/{image}/permanent', [CloudinaryUploadController::class, 'permanentlyDestroy'])
+    ->name('cloudinary.permanentDestroy');
+
+Route::post('/cloudinary-upload/retry/{failedUpload}', [CloudinaryUploadController::class, 'retryUpload'])
+    ->name('cloudinary.retry');
 
 /*
 |--------------------------------------------------------------------------
